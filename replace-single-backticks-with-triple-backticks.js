@@ -15,7 +15,8 @@ const getCodeReplacement = (masterFilename, guideText, masterCodeSection) => {
   const match = guideWithoutEndingSpace.match(regex);
   if (match) {   
     const language = match[1] || '';
-    const replaceWith = '```' + language + '\n' + cleanCode + '```';
+    const afterLanguage = cleanCode.match(/^\r?\n/) ? '' : '\n';
+    const replaceWith = '```' + language + afterLanguage + cleanCode + '```';
     if (!/```\r?\n```/.test(replaceWith)) {
       tempCount++;
       console.log(masterFilename);
@@ -41,7 +42,7 @@ let tempCount = 0;
 directoriesToParse.forEach(function(directory) {
   walkDir(directory, function (masterFilename) {
     const masterText = fs.readFileSync(masterFilename, 'utf8');
-    const matches = masterText.match(/`[^`]+?\r?\n`/g);
+    const matches = masterText.match(/^ `[^`]+?\r?\n`/gm);
     if (matches) {
       tempCount = 0;
       const langRegex = new RegExp('fcc\\\\guide\\\\' + lang + '\\\\');
@@ -50,7 +51,7 @@ directoriesToParse.forEach(function(directory) {
 
       if (fs.existsSync(guideRepoFilename)) {
         let guideText = fs.readFileSync(guideRepoFilename, 'utf8');
-        let tempMasterText = masterText;
+        let tempMasterText = masterText.replace(/^ `/, '`');
         matches.forEach(masterCodeSection => {
           const replaceWith = getCodeReplacement(masterFilename, guideText, masterCodeSection);
           if (replaceWith) {
@@ -70,6 +71,10 @@ directoriesToParse.forEach(function(directory) {
         }
         if (tempCount > 0) {
           guideArticleCount++;
+        }
+        if (guideArticleCount >= 75) {
+          console.log('more than 75 articles fixed');
+          process.exit(0);
         }
       } 
     }
