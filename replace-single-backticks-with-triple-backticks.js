@@ -6,17 +6,26 @@ const getCodeReplacement = (masterFilename, guideText, masterCodeSection) => {
 
   const cleanCode = masterCodeSection
     .replace(/`/g, '')
-    .replace(/ $/gm, '')
-    .replace(/^ (\S.*)/gm, '$1');
+    .replace(/[\t ]+$/gm, '')
+    .replace(/^ (\S.*)/gm, '$1')
 
+  console.log('cleanCode');
+  console.log(cleanCode)
+  console.log()
   const escapedRegex = escapeRegexString(cleanCode);
-  const regex = new RegExp('```(\\w*?)(\\r?\\n?)+?' + escapedRegex + '\\s*```');
-  const guideWithoutEndingSpace = guideText.replace(/ $/gm, '');
+  const regex = new RegExp('```(\\w*?)(\\r?\\n?)*' + escapedRegex + '\\s*```');
+  fs.writeFileSync('./regex.txt', regex.source.replace(/\n/g, 'chr(13)'));
+  const guideWithoutEndingSpace = guideText.replace(/[\t ] +$/gm, '');
+  fs.writeFileSync('./guide-without-ending-spaces.txt', guideWithoutEndingSpace);
   const match = guideWithoutEndingSpace.match(regex);
   if (match) {   
+    console.log("match")
     const language = match[1] || '';
     const afterLanguage = cleanCode.match(/^\r?\n/) ? '' : '\n';
     const replaceWith = '```' + language + afterLanguage + cleanCode + '```';
+    console.log('inside replaceWith');
+    console.log('replaceWith');
+    console.log()
     if (!/```\r?\n```/.test(replaceWith)) {
       tempCount++;
       console.log(masterFilename);
@@ -32,8 +41,16 @@ const getCodeReplacement = (masterFilename, guideText, masterCodeSection) => {
 
 const lang = 'arabic'
 
+// const directoriesToParse = [
+//   'D:/Coding/fcc/guide/' + lang + '/'
+// ];
+
+// const directoriesToParse = [
+//   'D:/Coding/fcc/guide/' + lang + '/algorithms/binary-search-trees/'
+// ];
+
 const directoriesToParse = [
-  'D:/Coding/fcc/guide/' + lang + '/'
+  './guide/'
 ];
 
 let guideArticleCount = 0;
@@ -47,13 +64,21 @@ directoriesToParse.forEach(function(directory) {
       tempCount = 0;
       const langRegex = new RegExp('fcc\\\\guide\\\\' + lang + '\\\\');
       const guideRepoFilename = masterFilename
-        .replace(langRegex, 'guide\\src\\pages\\');    
-
+        .replace(langRegex, 'guide\\src\\pages\\');
+      //const guideRepoFilename = 'D:\\Coding\\guide\\src\\pages\\algorithms\\binary-search-trees\\index.md';
+      console.log(guideRepoFilename)
       if (fs.existsSync(guideRepoFilename)) {
         let guideText = fs.readFileSync(guideRepoFilename, 'utf8');
         let tempMasterText = masterText.replace(/^ `/, '`');
         matches.forEach(masterCodeSection => {
+          console.log('masterCodeSection')
+          console.log(masterCodeSection);
+          console.log()
+          console.log(guideText)
           const replaceWith = getCodeReplacement(masterFilename, guideText, masterCodeSection);
+          console.log('replaceWith');
+          console.log(replaceWith);
+          console.log()
           if (replaceWith) {
             tempMasterText = tempMasterText.replace(masterCodeSection, replaceWith);
           }
