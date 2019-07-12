@@ -12,7 +12,7 @@ walkDir('D:/Coding/fcc/curriculum/challenges/english/08-coding-interview-prep/pr
     const { tests } = yaml.parse(yml[1]);
     let changes = 0;
     for (let { text, testString } of tests) {
-      const assertMsgArg = testString.match(/,\s*'([\s\S]+?)'\);$/);
+      const assertMsgArg = testString.match(/,\s*'([^,]+?)'\);$/);
       if (assertMsgArg) {
         if (assertMsgArg[1] === text) {
           changes++;
