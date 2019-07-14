@@ -4,7 +4,7 @@ const escapeRegexString = require('escape-regex-string');
 const fs = require('fs');
 
 let numFilesChanged = 0;
-walkDir('D:/Coding/fcc/curriculum/challenges/english/08-coding-interview-prep/project-euler/', function (filePath) {
+walkDir('D:/Coding/fcc/curriculum/challenges/english/04-data-visualization/', function (filePath) {
   const code = fs.readFileSync(filePath, 'utf8');
   const yml = code.match(/```yml\r?\n([\s\S]+?)```/);
   if (yml) {
@@ -12,11 +12,12 @@ walkDir('D:/Coding/fcc/curriculum/challenges/english/08-coding-interview-prep/pr
     const { tests } = yaml.parse(yml[1]);
     let changes = 0;
     for (let { text, testString } of tests) {
-      const assertMsgArg = testString.match(/,\s*'([^,]+?)'\);$/);
+      //  const assertMsgArg = testString.match(/,\s*"([^,]+?)"\);$/);
+      const assertMsgArg = testString.match(/,\s*"(.+?)"\);$/);
       if (assertMsgArg) {
         if (assertMsgArg[1] === text) {
           changes++;
-          const escapedRegex = new RegExp("(testString:.+?)(,\\s*'" + escapeRegexString(text) + "')(\\);)");
+          const escapedRegex = new RegExp('(testString:.+?)(,\\s*"' + escapeRegexString(text) + '")(\\);)');
           newCode = newCode.replace(escapedRegex, '$1$3');
           console.log(filePath);
           console.log('removed assert message');
