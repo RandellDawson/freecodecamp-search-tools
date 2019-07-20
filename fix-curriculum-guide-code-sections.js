@@ -10,16 +10,17 @@ const replacer = (match, p1, p2, p3, offset, string) => {
 };
 
 // walkDir('D:/Coding/fcc/mock-guide/english/certifications/apis-and-microservices/', function (filePath) {
-walkDir('D:/Coding/fcc/mock-guide/english/certifications/javascript-algorithms-and-data-structures/basic-algorithm-scripting/', function (filePath) {
-  //walkDir('D:/Coding/fcc/curriculum/challenges/engish/03-front-end-libraries/', function (filePath) {  
+// walkDir('D:/Coding/fcc/guide/english/certifications/javascript-algorithms-and-data-structures/', function (filePath) {
+walkDir('D:/Coding/fcc/guide/english/certifications/responsive-web-design/', function (filePath) {  
+
   numChallenges++;
   const content = fs.readFileSync(filePath, 'utf8');
 
-  
-  const newContent = content.replace(/(```\w+?\n)([^`]+?)(```)/g, replacer);
-  
+  console.log(filePath);
+  const newContent = content.replace(/(```(?:html|css)\n)([^`]+?)(```)/g, replacer);
+
   if (content !== newContent) {
-    console.log(filePath);
+    
     console.log(newContent);
     console.log();
     fs.writeFileSync(filePath, newContent, 'utf8');

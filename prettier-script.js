@@ -3,10 +3,10 @@ const prettier = require("prettier");
 const options = {
   "endOfLine": "lf",
   "semi": true,
-  "singleQuote": true,
   "jsxSingleQuote": true,
   "tabWidth": 2,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "singleQuote": true
 };
 
 module.exports = code => prettier.format(code, options); 
