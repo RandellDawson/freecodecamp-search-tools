@@ -1,12 +1,8 @@
 const fs = require('fs');
 const walkDir = require('./walk-dir');
 
-let numArticles = 0;
-let count = 0;
-
-const uniqueForumNames = {
-
-};
+let numberOfCertificationArticles = 0;
+const uniqueForumNames = {};
 const list = [];
 
 const sections = [
@@ -21,9 +17,7 @@ const sections = [
 
 sections.forEach(({ name: sectionName, path }) => {
   walkDir('D:/Coding/fcc/guide/english/certifications/' + path + '/', function (filePath) {
-    numArticles++;
     const content = fs.readFileSync(filePath, 'utf8');
-
     const { title } = content.match(/---\s*title:\s*(?<title>[\s\S]+?)\s*---/).groups;
     const strippedPath = filePath.slice(filePath.indexOf(path))
       .replace('\\index.md', '')
@@ -43,7 +37,7 @@ sections.forEach(({ name: sectionName, path }) => {
           suggestedForumUrlName,
           isStub
         });
-        count++;
+        numberOfCertificationArticles++;
       } else {
         console.log('*******\nduplicate found: ' + suggestedForumUrlName + '\n*******');
       }
@@ -51,6 +45,10 @@ sections.forEach(({ name: sectionName, path }) => {
   });
 })
 
-console.log('count = ' + count);
-console.log('numArticles = ' + numArticles);
-fs.writeFileSync('./data/guide-articles.json', JSON.stringify(list), 'utf8');
+const dataObj = {
+  numberOfCertificationArticles,
+  numberOfStubs: list.filter(({ isStub }) => isStub).length,
+  numberOfNonStubs: list.filter(({ isStub }) => !isStub).length,
+  articles: list
+};
+fs.writeFileSync('./data/certification-guide-articles.json', JSON.stringify(dataObj), 'utf8');
