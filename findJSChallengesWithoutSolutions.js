@@ -1,16 +1,15 @@
 const walkDir = require('./walk-dir');
-
 const cheerio = require('cheerio');
-const path = require('path');
 const fs = require('fs');
+
 //const languages = ['arabic', 'chinese', 'english', 'portuguese', 'spanish', 'russian'];
 const languages = ['english'];
 let numChallenges = 0;
 let count = 0;
+let results = '';
+
 languages.forEach(function(language) {
-  walkDir('D:/Coding/fcc/curriculum/challenges/' + language + '/05-apis-and-microservices/', function (filePath) {
-  //walkDir('D:/Coding/fcc/curriculum/challenges/' + language + '/02-javascript-algorithms-and-data-structures/', function (filePath) {
-  //walkDir('D:/Coding/fcc/curriculum/challenges/' + language + '/03-front-end-libraries/', function (filePath) {  
+    walkDir('D:/Coding/fcc/curriculum/challenges/english/', function (filePath) {
     numChallenges++;
     const code = fs.readFileSync(filePath, 'utf8');
     const $ = cheerio.load(code);
@@ -22,11 +21,15 @@ languages.forEach(function(language) {
       console.log('problem with ' + filePath);
       return;
     }
-    if (/^```(js|html|css)\s*\/\/\s*solution required\s*```$/.test(solution)) {
-      console.log(filePath);
+    if (/^```(js|html|css)\s*\/\/\s*solution required\s*```$/.test(solution) && !filePath.includes('-projects')) {
+
+      results += filePath
+        .replace('D:\\Coding\\fcc\\','')
+        .replace(/\\/g, '/') + '\n';
       count++;
     }
   });
 });
+fs.writeFileSync('./data/no-solutions.txt', results, 'utf8');
 console.log('count = ' + count);
 console.log('numChallenges = ' + numChallenges);
