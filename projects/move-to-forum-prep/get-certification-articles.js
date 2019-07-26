@@ -1,5 +1,5 @@
 const fs = require('fs');
-const walkDir = require('./walk-dir');
+const walkDir = require('../walk-dir');
 
 let numberOfCertificationArticles = 0;
 const uniqueForumNames = {};

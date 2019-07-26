@@ -11,8 +11,8 @@ const findMatchingGuideArticle = (forumArticleName) => {
 
 const code = fs.readFileSync('./data/forum-articles.html', 'utf8');
 
-let guideArticles = fs.readFileSync('./data/guide-articles.json', 'utf8');
-guideArticles = JSON.parse(guideArticles);
+let guideArticles = fs.readFileSync('./data/certification-guide-articles.json', 'utf8');
+guideArticles = JSON.parse(guideArticles).articles;
 
 const $ = cheerio.load(code);
 const $articles = $('.fps-result > .fps-topic > .topic > .search-link');

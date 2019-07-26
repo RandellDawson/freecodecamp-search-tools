@@ -1,4 +1,4 @@
-const walkDir = require('./walk-dir');
+const walkDir = require('../../utils/walk-dir');
 const yaml = require('yaml');
 const fs = require('fs');
 

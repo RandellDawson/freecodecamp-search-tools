@@ -1,4 +1,4 @@
-const walkDir = require('./walk-dir');
+const walkDir = require('../../utils/walk-dir');
 const escapeRegexString = require('escape-regex-string');
 const fs = require('fs');
 

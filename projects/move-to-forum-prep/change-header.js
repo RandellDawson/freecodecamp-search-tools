@@ -1,27 +1,24 @@
 const fs = require('fs');
-const walkDir = require('./walk-dir');
-const makePretty = require('./prettier-script');
+const walkDir = require('../walk-dir');
 
 let numChallenges = 0;
 let count = 0;
 
-const replacer = (match, p1, p2, p3, offset, string) => {
-  return p1 + makePretty(p2) + p3;
+const replacer = (match, p1, p2, p3, p4, p5, offset, string) => {
+  return p1 + p2 + p3 + '#' + p5;
 };
 
 // walkDir('D:/Coding/fcc/mock-guide/english/certifications/apis-and-microservices/', function (filePath) {
 // walkDir('D:/Coding/fcc/guide/english/certifications/javascript-algorithms-and-data-structures/', function (filePath) {
-walkDir('D:/Coding/fcc/guide/english/certifications/responsive-web-design/', function (filePath) {  
+walkDir('D:/Coding/fcc/guide/english/certifications/', function (filePath) {  
 
   numChallenges++;
   const content = fs.readFileSync(filePath, 'utf8');
 
-  console.log(filePath);
-  const newContent = content.replace(/(```(?:html|css)\n)([^`]+?)(```)/g, replacer);
-
+  const newContent = content.replace(/(---\r?\ntitle: )([^\n]+)(\n---\s+)(##)( \2)/, replacer);
   if (content !== newContent) {
-    
-    console.log(newContent);
+    console.log(filePath);
+    console.log(content);
     console.log();
     fs.writeFileSync(filePath, newContent, 'utf8');
     count++;
