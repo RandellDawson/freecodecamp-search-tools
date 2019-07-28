@@ -32,11 +32,12 @@ directories.forEach(dir => {
       const tests = code.match(/```yml\r?\ntests:(?<testSection>[\s\S]*?)```/);
       if (tests) {
         const testsCode = tests.groups.testSection;
-        if (/assert\.(not|strict|notstrict|deep|notdeep|equal)/i.test(testsCode)) {
+        const testStringsWithAssertEquals = testsCode.match(/testString: .*?assert\.(not|strict|notstrict|deep|notdeep)?equal.+\n/gi);
+        if (testStringsWithAssertEquals) {
           results += filePath
             .replace('D:\\Coding\\fcc\\', '')
-            .replace(/\\/g, '/') + '\n';
-          results += testsCode + '\n\n';
+            .replace(/\\/g, '/') + '\n';  
+          results += testStringsWithAssertEquals.reduce((str, assert) => str += assert, '') + '\n';
           count++;
         }
       }
