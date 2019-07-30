@@ -1,5 +1,5 @@
 const fs = require('fs');
-const walkDir = require('../walk-dir');
+const walkDir = require('../../utils/walk-dir');
 
 let numChallenges = 0;
 let count = 0;

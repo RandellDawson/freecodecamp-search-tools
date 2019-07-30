@@ -1,5 +1,9 @@
-const walkDir = require('../walk-dir');
+const walkDir = require('../../utils/walk-dir');
 const fs = require('fs');
+
+const stripSurroundingQuotes = str => str
+  .replace(/^("|')/, '')
+  .replace(/("|')$/, '');
 
 let numChallenges = 0;
 let count = 0;
@@ -18,23 +22,26 @@ walkDir(startingDir, function (challengeFilePath) {
     try {
       if (fs.existsSync(guideFilePath)) {
         //file exists
-        const regex = /---[\s\S]*?\r?\ntitle: ('?)(?<title>(?<problem>Problem \d+: )?[^']+?)\1\r?\n[\s\S]*?---/;
+        const regex = /---[\s\S]*?\r?\ntitle: (('|")?)(?<title>(?<problem>Problem \d+: )?[^']+?)\2\r?\n[\s\S]*?---/;
         const challengeContent = fs.readFileSync(challengeFilePath, 'utf8');
         const challengeTitleMatch = challengeContent.match(regex);
         
         if (challengeTitleMatch) {
-          const { title: challengeTitle, problem } = challengeTitleMatch.groups;
+          let { title: challengeTitle, problem } = challengeTitleMatch.groups;
+          challengeTitle = challengeTitle.toLocaleLowerCase();
+          problem = problem ? problem.toLowerCase() : problem;
           const guideContent = fs.readFileSync(guideFilePath, 'utf8');
           const guideContentMatch = guideContent.match(regex);
           let guideTitle;
           if (guideContentMatch) {
-            guideTitle = guideContentMatch.groups.title;
+            guideTitle = stripSurroundingQuotes(guideContentMatch.groups.title).toLowerCase();
           }
           if (challengeTitle !== guideTitle && challengeTitle !== (problem + guideTitle)) {
             count++;
             console.log(challengeFilePath);
             console.log(challengeTitle);
             console.log(guideTitle);
+            console.log();
           }
         }
       } else {
