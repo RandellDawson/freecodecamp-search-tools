@@ -57,4 +57,4 @@ const dataObj = {
   numberOfNonStubs: list.filter(({ isStub }) => !isStub).length,
   articles: list
 };
-fs.writeFileSync('../../data/challenge-files.json', JSON.stringify(dataObj), 'utf8');
+fs.writeFileSync('../../data/challenge-files.json', JSON.stringify(dataObj, null, '  '), 'utf8');
