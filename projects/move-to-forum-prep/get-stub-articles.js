@@ -6,14 +6,13 @@ const uniqueForumNames = {};
 const list = [];
 
 const sections = [
-  // { name: 'Responsive Web Design', path: 'responsive-web-design' },
-  // { name: 'JavaScript Algorithms and Data Structures', path: 'javascript-algorithms-and-data-structures' },
-  // { name: 'Front End Libraries', path: 'front-end-libraries' },
-  // { name: 'Data Visualization', path: 'data-visualization' },
-  // { name: 'Apis and Microservices', path: 'apis-and-microservices' },
-  // { name: 'Information Security and Quality Assurance', path: 'information-security-and-quality-assurance' },
+  { name: 'Responsive Web Design', path: 'responsive-web-design' },
+  { name: 'JavaScript Algorithms and Data Structures', path: 'javascript-algorithms-and-data-structures' },
+  { name: 'Front End Libraries', path: 'front-end-libraries' },
+  { name: 'Data Visualization', path: 'data-visualization' },
+  { name: 'Apis and Microservices', path: 'apis-and-microservices' },
+  { name: 'Information Security and Quality Assurance', path: 'information-security-and-quality-assurance' },
   { name: 'Coding Interview Prep', path: 'coding-interview-prep' }
-  // { name: 'Coding Interview Prep/Project Euler', path: 'coding-interview-prep/project-euler' }
 ];
 
 sections.forEach(({ name: sectionName, path }) => {

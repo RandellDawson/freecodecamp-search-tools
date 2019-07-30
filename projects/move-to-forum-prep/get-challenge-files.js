@@ -5,7 +5,6 @@ const isStub = challengeFilePath => {
   const guideFilePath = 'D:/coding/fcc/' + challengeFilePath
     .replace('.english.md', '/index.md')
     .replace(/curriculum\/challenges\/english\/\d+-/, 'guide/english/certifications/');
-  console.log(guideFilePath);
   const content = fs.readFileSync(guideFilePath, 'utf8');
   return /This is a stub/i.test(content);
 };
@@ -33,6 +32,10 @@ sections.forEach(({ name: sectionName, path }) => {
       .slice(filePath.indexOf(path))
       .split('\\');
     const forumName = strippedPath[strippedPath.length - 1].replace('.english.md', '');
+    const guideFilePath = filePath
+      .replace(/\\/g, '/')
+      .replace('.english.md', '/index.md')
+      .replace(/curriculum\/challenges\/english\/\d+-/, 'guide/english/certifications/');
     const challengeFilePath = filePath
       .replace(/\\/g, '/')
       .replace('D:/Coding/fcc/', '');
@@ -40,6 +43,7 @@ sections.forEach(({ name: sectionName, path }) => {
       list.push({
         sectionName,
         challengeFilePath,
+        guideFilePath,
         title,
         forumName,
         isStub: isStub(challengeFilePath)

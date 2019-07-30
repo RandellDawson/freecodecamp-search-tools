@@ -5,8 +5,8 @@ const { nonMatches: nonMatchesData }  = JSON.parse(data);
 
 let nonMatches = '';
 
-nonMatchesData.forEach(({ forumArticleName, fullForumUrl, forumTopicId, status = "" }) => {
-  nonMatches += `${forumArticleName}|${fullForumUrl}|${forumTopicId}|${status}\n`;
+nonMatchesData.forEach(({ forumArticleName, forumArticleUrl, forumTopicId, status = "" }) => {
+  nonMatches += `${forumArticleName}|${forumArticleUrl}|${forumTopicId}|${status}\n`;
 });
 fs.writeFileSync('../../data/forum-non-matches.txt', nonMatches, 'utf8');
 console.log('non-matches: ' + nonMatchesData.length);
