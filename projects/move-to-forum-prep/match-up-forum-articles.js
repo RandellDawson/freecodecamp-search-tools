@@ -2,8 +2,13 @@ const fs = require('fs');
 
 const findMatchingGuideArticle = (forumArticleName) => {
   const matchData = challengeFiles.filter(
-    ({ forumName }) => forumArticleName === forumName
-  );
+    ({ forumName }) => {
+      // remove non-alphanumeric characters remove consecutive dashes
+      forumName = forumName
+        .replace(/[^a-z0-9-]/gi, '')
+        .replace(/-+/g,'-');
+      return forumArticleName === forumName;
+    });
   return matchData.length > 0 ? matchData[0] : null;
 };
 
