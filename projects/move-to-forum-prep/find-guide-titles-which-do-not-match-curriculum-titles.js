@@ -9,7 +9,7 @@ let numChallenges = 0;
 let count = 0;
 
 // const startingDir = './data/challenges/';
-const startingDir = 'D:/Coding/fcc/curriculum/challenges/english/';
+const startingDir = 'D:/Coding/fcc/curriculum/challenges/english/08-coding-interview-prep/project-euler/';
 
 walkDir(startingDir, function (challengeFilePath) {
 

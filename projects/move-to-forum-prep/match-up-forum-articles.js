@@ -28,7 +28,6 @@ const results = {
 let numMatches = 0;
 let numNonMatches = 0;
 
-let me = 0;
 articles.forEach(forumArticleUrl => {
   const match = forumArticleUrl.match(/challenge-guide-(?<forumArticleName>[\S]+)\/(?<forumTopicId>\d+)/);
   if (match) {
@@ -45,6 +44,7 @@ articles.forEach(forumArticleUrl => {
     //console.log('no match: ' + 'https://www.freecodecamp.com' + forumArticleUrl);
   }
 });
+
 results.numMatches = numMatches;
 results.numNonMatches = numNonMatches;
 results.total = numMatches + numNonMatches;
@@ -52,4 +52,3 @@ fs.writeFileSync('../../data/forum-topics-and-challenge-files-matrix.json', JSON
 console.log('matches: ' + results.matches.length);
 console.log('non-matches: ' + results.nonMatches.length);
 console.log('total: ' + (results.matches.length + results.nonMatches.length));
-console.log('me = '+me);

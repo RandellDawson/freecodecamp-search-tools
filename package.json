@@ -8,6 +8,7 @@
     "escape-regex-string": "^1.0.6",
     "esprima": "^4.0.1",
     "fs-cheerio": "^3.0.0",
+    "gray-matter": "^4.0.2",
     "markdown-link-check": "^3.7.2",
     "prettier": "^1.18.2",
     "puppeteer": "^1.19.0",

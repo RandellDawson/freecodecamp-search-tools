@@ -1,4 +1,4 @@
-const walkDir = require('../utils/walk-dir');
+const walkDir = require('../../utils/walk-dir');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
