@@ -8,7 +8,7 @@ let count = 0;
 let results = [];
 
 const directories = [
-  '01-responsive-web-design',
+  // '01-responsive-web-design',
   '02-javascript-algorithms-and-data-structures',
   '03-front-end-libraries',
   '04-data-visualization',
@@ -32,23 +32,31 @@ directories.forEach(dir => {
       console.log('can not find challenge seed code for ' + filePath);
       return;
     }
-    const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
+    // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
+    // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
+    
+    const commentsMatch = challengeSeedCode.match(/\/\/.*|\/\*[^]*\*\//gm);
     if (commentsMatch) {
       for (comment of commentsMatch) {
         if (!commentsFound[comment]) {
-          commentsFound[comment] = 1;
+          commentsFound[comment] = [ filePath ];
           count++;
+        } else {
+          commentsFound[comment].push(filePath);
         }
       }
-      // console.log(filePath);
-      // console.log(commentsMatch);
-      // console.log();
-      // console.log();
     }
   });
 });
-results = Object.keys(commentsFound).reduce((str, comment) => str += comment + '\n\n', '');
-console.log(results);
-fs.writeFileSync('./data/js-comments.txt', JSON.stringify(results, null,2 ), 'utf8');
+results = Object
+  .keys(commentsFound)
+  .reduce((str, comment) => str += `${comment}
+   Files:
+   ${commentsFound[comment]
+    .reduce((files, file) => files += `  ${file + '\n'}`)}
+
+  `, '');
+// console.log(results);
+fs.writeFileSync('./data/js-comments.txt', results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
