@@ -1,6 +1,7 @@
 const walkDir = require('../../utils/walk-dir');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const commentsLookup = require('./comments-lookup');
 
 
 let numChallenges = 0;
@@ -10,10 +11,8 @@ let results = [];
 const directories = [
   // '01-responsive-web-design',
   '02-javascript-algorithms-and-data-structures',
-  '03-front-end-libraries',
+ // '03-front-end-libraries',
   '04-data-visualization',
-  '05-apis-and-microservices',
-  '06-information-security-and-quality-assurance',
   '08-coding-interview-prep'
 ];
 
@@ -25,26 +24,31 @@ directories.forEach(dir => {
     const code = fs.readFileSync(filePath, 'utf8');
     const $ = cheerio.load(code);
     let challengeSeedCode;
-    try {
-      challengeSeedCode = $('#challengeSeed').html().trim();
-    }
-    catch (error) {
-      console.log('can not find challenge seed code for ' + filePath);
-      return;
-    }
+    const shortFilePath = filePath.split('\\').slice(-1);
+    if (!filePath.includes('-projects')) {
+      try {
+        challengeSeedCode = $('#js-seed, #jsx-seed, #html-seed').html().trim();
+      }
+      catch (error) {
+        console.log('can not find challenge seed code for ' + shortFilePath);
+        return;
+      }
+
     // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
     // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
-    
     const commentsMatch = challengeSeedCode.match(/\/\/.*|\/\*[^]*\*\//gm);
     if (commentsMatch) {
       for (comment of commentsMatch) {
-        if (!commentsFound[comment]) {
-          commentsFound[comment] = [ filePath ];
-          count++;
-        } else {
-          commentsFound[comment].push(filePath);
+        if (!commentsLookup[comment]) {
+          if (!commentsFound[comment]) {
+            commentsFound[comment] = [shortFilePath];
+            count++;
+          } else {
+            commentsFound[comment].push(shortFilePath);
+          }
         }
       }
+    }
     }
   });
 });
