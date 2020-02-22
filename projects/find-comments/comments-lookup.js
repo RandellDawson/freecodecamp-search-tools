@@ -4,7 +4,6 @@ module.exports = ({
   '// Change this line': true,
   '// Example': true,
   '// Setup': true,
-  '// Change this value to test': true,
   '// Add your code above this line': true,
   '// Add your code below this line': true,
   '/* Add your code above this line */': true,

@@ -57,21 +57,24 @@ directories.forEach(dir => {
   });
 });
 
-
-results = Object
+const comments = Object
   .keys(commentsFound)
-  .reduce((str, comment) => str += `\`\`\`
+  .reduce((arr, comment) => {
+    arr.push({ comment, files: commentsFound[comment]});
+    return arr;
+  }, []);
+comments.sort((a, b) => a.comment < b.comment ? -1 : a.comment > b.comment ? 1 : 0);
+
+results = comments.reduce((str, { comment, files }) => str += `\`\`\`
 ${comment}
 \`\`\`
-${commentsFound[comment].reduce((files, file) => {
-  // console.log(file)
+${files.reduce((files, file) => {
   const fileName = file.split('/').slice(-1)[0];
   files += `- [${fileName}](https://github.com/freeCodeCamp/freeCodeCamp/tree/master/${file})\n`;
   return files;
 }, '\n')}
 
 `, '');
-console.log(results);
 fs.writeFileSync('./data/js-comments.txt', results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
