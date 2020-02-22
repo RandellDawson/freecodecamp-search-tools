@@ -24,7 +24,11 @@ directories.forEach(dir => {
     const code = fs.readFileSync(filePath, 'utf8');
     const $ = cheerio.load(code);
     let challengeSeedCode;
-    const shortFilePath = filePath.split('\\').slice(-1);
+
+    const shortFilePath = filePath
+      .replace(/D:\\Coding\\fcc\\/, '')
+      .split('\\')
+      .join('/');
     if (!filePath.includes('-projects')) {
       try {
         challengeSeedCode = $('#js-seed, #jsx-seed, #html-seed').html().trim();
@@ -52,15 +56,22 @@ directories.forEach(dir => {
     }
   });
 });
+
+
 results = Object
   .keys(commentsFound)
-  .reduce((str, comment) => str += `${comment}
-   Files:
-   ${commentsFound[comment]
-    .reduce((files, file) => files += `  ${file + '\n'}`)}
+  .reduce((str, comment) => str += `\`\`\`
+${comment}
+\`\`\`
+${commentsFound[comment].reduce((files, file) => {
+  // console.log(file)
+  const fileName = file.split('/').slice(-1)[0];
+  files += `- [${fileName}](https://github.com/freeCodeCamp/freeCodeCamp/tree/master/${file})\n`;
+  return files;
+}, '\n')}
 
-  `, '');
-// console.log(results);
+`, '');
+console.log(results);
 fs.writeFileSync('./data/js-comments.txt', results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
