@@ -6,6 +6,15 @@ module.exports = ({
   '// Setup': true,
   '// Add your code above this line': true,
   '// Add your code below this line': true,
-  '/* Add your code above this line */': true,
-  '/* Add your code below this line */': true
+ // '/* Add your code above this line */': true,
+ // '/* Add your code below this line */': true,
+  '<!--\n<h1>Hello World</h1>\n\n<h2>CatPhotoApp</h2>\n\n<p>Kitty ipsum dolor sit amet, shed everywhere shed everywhere stretching attack your ankles chase the red dot, hairball run catnip eat the grass sniff.</p>\n-->': true,
+  '<!-- Only change code above this line -->': true,
+  '<!-- Only change code below this line -->': true,
+  '<!-- Stacked bar chart of weekly training-->': true,
+  '<!-- Stacked bar chart will go here -->': true,
+  '/* Only change code below this line */': true,
+  '/* Only change code above this line */': true,
+  '/* Change code below this line */': true,
+  '/* Change code above this line */': true,
 });

@@ -8,12 +8,21 @@ let numChallenges = 0;
 let count = 0;
 let results = [];
 
+const commentType = 'html';
+// const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
+// const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
+const commentTypeRegex = {
+  js: /\/\/.*|\/\*[^]*\*\//gm,
+  html: /<!--([\s\S]*?)-->/g,
+  css: /\/\*[\s\S]+?\*\//g
+};
+
 const directories = [
-  // '01-responsive-web-design',
-  '02-javascript-algorithms-and-data-structures',
- // '03-front-end-libraries',
-  '04-data-visualization',
-  '08-coding-interview-prep'
+  '01-responsive-web-design',
+  //'02-javascript-algorithms-and-data-structures',
+  //'03-front-end-libraries',
+  //'04-data-visualization',
+  //'08-coding-interview-prep'
 ];
 
 const commentsFound = {};
@@ -31,28 +40,27 @@ directories.forEach(dir => {
       .join('/');
     if (!filePath.includes('-projects')) {
       try {
-        challengeSeedCode = $('#js-seed, #jsx-seed, #html-seed').html().trim();
+        //challengeSeedCode = $('#js-seed, #jsx-seed, #html-seed').html().trim();
+        challengeSeedCode = $('#html-seed').html().trim();
       }
       catch (error) {
         console.log('can not find challenge seed code for ' + shortFilePath);
         return;
       }
+      const commentsMatch = challengeSeedCode.match(commentTypeRegex[commentType]);
 
-    // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
-    // const commentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
-    const commentsMatch = challengeSeedCode.match(/\/\/.*|\/\*[^]*\*\//gm);
-    if (commentsMatch) {
-      for (comment of commentsMatch) {
-        if (!commentsLookup[comment]) {
-          if (!commentsFound[comment]) {
-            commentsFound[comment] = [shortFilePath];
-            count++;
-          } else {
-            commentsFound[comment].push(shortFilePath);
+      if (commentsMatch) {
+        for (comment of commentsMatch) {
+          if (!commentsLookup[comment]) {
+            if (!commentsFound[comment]) {
+              commentsFound[comment] = [shortFilePath];
+              count++;
+            } else {
+              commentsFound[comment].push(shortFilePath);
+            }
           }
         }
       }
-    }
     }
   });
 });
@@ -60,7 +68,7 @@ directories.forEach(dir => {
 const comments = Object
   .keys(commentsFound)
   .reduce((arr, comment) => {
-    arr.push({ comment, files: commentsFound[comment]});
+    arr.push({ comment, files: commentsFound[comment] });
     return arr;
   }, []);
 comments.sort((a, b) => a.comment < b.comment ? -1 : a.comment > b.comment ? 1 : 0);
@@ -75,6 +83,6 @@ ${files.reduce((files, file) => {
 }, '\n')}
 
 `, '');
-fs.writeFileSync('./data/js-comments.txt', results, 'utf8');
+fs.writeFileSync(`./data/${commentType}-comments.txt`, results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
