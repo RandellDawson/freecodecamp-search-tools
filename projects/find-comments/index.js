@@ -1,25 +1,24 @@
 const walkDir = require('../../utils/walk-dir');
-const cheerio = require('cheerio');
 const fs = require('fs');
-const commentsLookup = require('./comments-lookup');
-
+const { COMMENT_TRANSLATIONS } = require('./comments-lookup');
 
 let numChallenges = 0;
 let count = 0;
 let results = [];
 
-const commentType = 'html';
+const language = 'chinese';
+const commentType = 'js';
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
 const commentTypeRegex = {
-  js: /\/\/.*|\/\*[^]*\*\//gm,
+  js: /\/\/ .+|\/\*[^]*\*\//g,
   html: /<!--([\s\S]*?)-->/g,
   css: /\/\*[\s\S]+?\*\//g
 };
 
 const directories = [
-  '01-responsive-web-design',
-  //'02-javascript-algorithms-and-data-structures',
+  //'01-responsive-web-design',
+  '02-javascript-algorithms-and-data-structures'
   //'03-front-end-libraries',
   //'04-data-visualization',
   //'08-coding-interview-prep'
@@ -31,32 +30,30 @@ directories.forEach(dir => {
   walkDir('D:/Coding/fcc/curriculum/challenges/english/' + dir + '/', function (filePath) {
     numChallenges++;
     const code = fs.readFileSync(filePath, 'utf8');
-    const $ = cheerio.load(code);
-    let challengeSeedCode;
+    const challengeSeedDivMatch = code.match(/<div id='js-seed'>(?<challengeSeedDiv>[\s\S]+?)<\/div>/);
+    if (challengeSeedDivMatch) {
 
-    const shortFilePath = filePath
-      .replace(/D:\\Coding\\fcc\\/, '')
-      .split('\\')
-      .join('/');
-    if (!filePath.includes('-projects')) {
-      try {
-        //challengeSeedCode = $('#js-seed, #jsx-seed, #html-seed').html().trim();
-        challengeSeedCode = $('#html-seed').html().trim();
-      }
-      catch (error) {
-        console.log('can not find challenge seed code for ' + shortFilePath);
-        return;
-      }
-      const commentsMatch = challengeSeedCode.match(commentTypeRegex[commentType]);
+      let { challengeSeedDiv } = challengeSeedDivMatch.groups;
+      challengeSeedDiv = challengeSeedDiv.trim();
+      const challengeSeedCodeMatch = challengeSeedDiv.match(/^```js(?<challengeSeedCode>[\s\S]*?)```$/m);
+      const { challengeSeedCode } = challengeSeedCodeMatch.groups;
+      const shortFilePath = filePath
+        .replace(/D:\\Coding\\fcc\\/, '')
+        .split('\\')
+        .join('/');
 
-      if (commentsMatch) {
-        for (comment of commentsMatch) {
-          if (!commentsLookup[comment]) {
-            if (!commentsFound[comment]) {
-              commentsFound[comment] = [shortFilePath];
-              count++;
-            } else {
-              commentsFound[comment].push(shortFilePath);
+      if (challengeSeedCode && !filePath.includes('-projects')) {
+        const commentsMatch = challengeSeedCode.match(commentTypeRegex[commentType]);
+
+        if (commentsMatch) {
+          for (comment of commentsMatch) {
+            if (!COMMENT_TRANSLATIONS[comment] || !COMMENT_TRANSLATIONS[comment][language]) {
+              if (!commentsFound[comment]) {
+                commentsFound[comment] = [shortFilePath];
+                count++;
+              } else {
+                commentsFound[comment].push(shortFilePath);
+              }
             }
           }
         }
