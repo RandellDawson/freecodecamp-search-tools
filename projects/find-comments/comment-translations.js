@@ -1,41 +1,41 @@
 const COMMENT_TRANSLATIONS = {
-  '// Only change code above this line': {
+  'Only change code above this line': {
     chinese: '仅修改这一行注释上面的代码'
   },
-  '// Only change code below this line': {
+  'Only change code below this line': {
     chinese: '仅修改这一行注释下面的代码'
   },
-  '// Change code above this line': {
+  'Change code above this line': {
     chinese: '请修改这一行注释上面的代码'
   },
-  '// Change code below this line': {
+  'Change code below this line': {
     chinese: '请修改这一行注释下面的代码'
   },
-  '// Change this line': {
+  'Change this line': {
     chinese: true
   },
-  '// Setup': {
+  'Setup': {
     chinese: true
   },
-  '/*\nGiven a function (representing the tea type) and number of cups needed, the\nfollowing function returns an array of strings (each representing the a cup of\na specific type of tea).\n*/': {
+  'Given a function (representing the tea type) and number of cups needed, the\nfollowing function returns an array of strings (each representing the a cup of\na specific type of tea).': {
     chinese: true
   },
-  '// Function that returns a string representing a cup of green tea': {
+  'Function that returns a string representing a cup of green tea': {
     chinese: true
   },
-  '// Function that returns a string representing a cup of black tea': {
+  'Function that returns a string representing a cup of black tea': {
     chinese: true
   },
-  '// Entertainment sites': {
+  'Entertainment sites': {
     chinese: true
   },
-  '// 24.44 in Celsius': {
+  '24.44 in Celsius': {
     chinese: true
   },
-  '// 26 in Celsius': {
+  '26 in Celsius': {
     chinese: true
   },
-  '// Should display \'carrot\'': {
+  'Should display \'carrot\'': {
     chinese: true
   },
   '// yields true': {
