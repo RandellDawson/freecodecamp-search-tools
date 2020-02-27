@@ -3,13 +3,20 @@ const exec = util.promisify(require('child_process').exec);
 const FIND_RELEVANT_COMMITS_CMD = 'git log --pretty=format:"%H" --since "DEC 1 2019" -- curriculum/challenges/english/01-responsive-web-design';
 
 async function getOutputFromCommand(command) {
+  delete process.platform;
+  process.platform = 'linux';
   try {
-    const { stdout } = await exec(command);
+    const { stdout } = await exec(command, {
+      env: { PATH: '/C/Program Files/Git' },
+      shell: 'C:\\Program Files\\Git\\bin\\bash.exe'
+    });
     return stdout;
-  } catch (err) {
-    console.error(err);
+  }
+  catch (err) {
+    console.log(err);
   };
-};
+  process.platform = 'win32';
+}
 
 async function getFileContentVersions(commit, filepath) {
   let command = `git show ${commit}^1:${filepath}`;
@@ -23,6 +30,7 @@ async function getFileContentVersions(commit, filepath) {
   const commitsStr = await getOutputFromCommand(FIND_RELEVANT_COMMITS_CMD);
   const commits = commitsStr.split('\n');
   console.log(commits);
+  let counter = 0;
   for (let commit of commits) {
     console.log('**********\nCOMMIT: ' + commit + '\n');
 
@@ -36,6 +44,10 @@ async function getFileContentVersions(commit, filepath) {
       console.log(oldContent);
       console.log('\n' + newContent + '\n');
     }
-    console.log('*********\n\n')
+    console.log('*********\n\n');
+    counter++;
+    if (counter > 0) {
+      break;
+    }
   }
 })()
