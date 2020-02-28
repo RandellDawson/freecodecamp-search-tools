@@ -2,12 +2,14 @@ const { parseMarkdown } = require('@freecodecamp/challenge-md-parser');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
-
-const FIND_RELEVANT_COMMITS_CMD = 'git log --pretty=format:"%H" --since "DEC 1 2019" -- curriculum/challenges/english/01-responsive-web-design';
+const curriculumSection = 'curriculum/challenges/english/01-responsive-web-design';
+const FIND_RELEVANT_COMMITS_CMD = `git log --pretty=format:"%H" --since "DEC 1 2019" -- ${curriculumSection}`;
 
 async function getOutputFromCommand(command) {
+  // necessary to allow to work on Windows
   delete process.platform;
   process.platform = 'linux';
+
   try {
     const { stdout } = await exec(command, {
       env: { PATH: '/C/Program Files/Git' },
@@ -18,15 +20,15 @@ async function getOutputFromCommand(command) {
   catch (err) {
     console.log(err);
   };
-  process.platform = 'win32';
+  process.platform = 'win32'; // return to using Windows
 }
 
 async function getFileContentVersions(commit, filepath) {
-  // get previous version of file content
+  // Get file content for version one commit earlier than than earliest commit
   let command = `git show ${commit}^1:${filepath}`;
   const oldContent = await getOutputFromCommand(command);
 
-  // get committed version of file content
+  // Get file content for current version
   command = `git show HEAD:${filepath}`;
   const newContent = await getOutputFromCommand(command);
   return { oldContent, newContent };
@@ -35,19 +37,24 @@ async function getFileContentVersions(commit, filepath) {
 (async function () {
   const commitsStr = await getOutputFromCommand(FIND_RELEVANT_COMMITS_CMD);
   const commits = commitsStr.split('\n');
-  // for (let commit of commits) {
-  const commit = commits.slice(-1);
-  const commitTitle = 'COMMIT: ' + commit;
-  console.log('-'.repeat(commitTitle.length) + `\n${commitTitle}`);
+  const commit = commits.slice(-1); // earliest commit
 
-  // Build command for getting list of files between commits
-  const command = `git diff --name-only ${commit}^1 HEAD -- curriculum/challenges/english/01-responsive-web-design`;
+  /*
+  Git command to find files between one commit earlier than than earliest
+  commit and HEAD
+  */
+  const command = `git diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
   const listOfFilesBetweenDiffs = await getOutputFromCommand(command);
   const filenames = listOfFilesBetweenDiffs.split('\n');
   for (let filepath of filenames) {
     if (filepath) {
-      const { oldContent, newContent } = await getFileContentVersions(commit, filepath);
+      const {
+        oldContent,
+        newContent
+      } = await getFileContentVersions(commit, filepath);
+      
       const baseFilePath = 'D:/Coding/fcc-misc/search-tools/data/';
+      
       fs.writeFileSync(`${baseFilePath}old-content.md`, oldContent, 'utf8');
       const {
         description: oldDescription,
@@ -97,6 +104,4 @@ async function getFileContentVersions(commit, filepath) {
       }
     }
   }
-  console.log('-'.repeat(commitTitle.length) + '\n');
-  // }
 })()
