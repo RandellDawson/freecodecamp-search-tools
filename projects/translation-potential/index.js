@@ -15,13 +15,10 @@ const fromDate = "DEC 1 2019";
 const baseFilePath = 'D:/Coding/fcc-misc/search-tools/data/';
 // Only modify the above 3 variables
 
-const FIND_RELEVANT_COMMITS_CMD = `git log --pretty=format:"%H" --since "${fromDate}" -- ${curriculumSection}`;
+const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDate}" -- ${curriculumSection} | tail -n 1`;
 
 (async function () {
-  const commitsStr = await getOutputFromCommand(FIND_RELEVANT_COMMITS_CMD);
-  const commits = commitsStr.split('\n');
-  const commit = commits.slice(-1); // earliest commit
-
+  const commit = await getOutputFromCommand(FIND_EARLIEST_COMMIT_CMD);
   /*
   Git command to find files between one commit earlier than the earliest
   commit and HEAD
