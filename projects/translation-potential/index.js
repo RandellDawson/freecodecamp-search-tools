@@ -46,7 +46,7 @@ const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDa
       if (issuesFound) {
         const { data: { title: challengeTitle } } = matter(newContent);
         const challengeLink = `[${challengeTitle}](${baseGitHubUrl + filepath})`;
-        let content = `- [ ] ${challengeLink}\n${issuesFound}`;
+        let content = `- [ ] ${challengeLink}\n\n<details><summary>Show/Hide sections with changes/issues</summary>\n\n${issuesFound}\n</details>\n\n`;
         overallContentDiffs.push(content);
       }
     }

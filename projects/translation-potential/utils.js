@@ -81,9 +81,7 @@ function findIssues(oldParsed, newParsed) {
   if (oldInstructions !== newInstructions) {
     issuesFound += '- **`Instructions` section has changed**\n';
   }
-  if (oldTests.length !== newTests.length) {
-    issuesFound += `- **Different number of tests found (old: ${oldTests.length}, new: ${newTests.length})**\n`;
-  } else {
+  if (oldTests.length === newTests.length) {
     const nonMatchingTexts = oldTests.reduce((results, oldTest, idx) => {
       if (oldTest.text !== newTests[idx].text) {
         results.push({
