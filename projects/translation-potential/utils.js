@@ -63,11 +63,11 @@ function createTextDiffTable(oldText, newText) {
 `;
 }
 
-async function getParsedVersions(oldContent, newContent, baseFilePath) {
-  fs.writeFileSync(`${baseFilePath}old-content.md`, oldContent, 'utf8');
-  const oldParsed = await parseMarkdown(`${baseFilePath}old-content.md`);
-  fs.writeFileSync(`${baseFilePath}new-content.md`, newContent, 'utf8');
-  const newParsed = await parseMarkdown(`${baseFilePath}new-content.md`);
+async function getParsedVersions(oldContent, newContent, outputPath) {
+  fs.writeFileSync(`${outputPath}old-content.md`, oldContent, 'utf8');
+  const oldParsed = await parseMarkdown(`${outputPath}old-content.md`);
+  fs.writeFileSync(`${outputPath}new-content.md`, newContent, 'utf8');
+  const newParsed = await parseMarkdown(`${outputPath}new-content.md`);
   return { oldParsed, newParsed };
 }
 
