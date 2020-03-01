@@ -16,20 +16,11 @@ async function getOutputFromCommand(command) {
     return stdout;
   }
   catch (err) {
-    console.log(err);
+    return '';
+  }
+  finally {
+    process.platform = 'win32'; // return to using Windows
   };
-  process.platform = 'win32'; // return to using Windows
-}
-
-async function getFileContentVersions(commit, filepath) {
-  // Get file content for version one commit earlier than than earliest commit
-  let command = `git show ${commit}^1:${filepath}`;
-  const oldContent = await getOutputFromCommand(command);
-
-  // Get file content for current version
-  command = `git show HEAD:${filepath}`;
-  const newContent = await getOutputFromCommand(command);
-  return { oldContent, newContent };
 }
 
 function createTextDiffTable(oldText, newText) {
@@ -63,26 +54,38 @@ function createTextDiffTable(oldText, newText) {
 `;
 }
 
-async function getParsedVersions(oldContent, newContent, outputPath) {
-  fs.writeFileSync(`${outputPath}old-content.md`, oldContent, 'utf8');
-  const oldParsed = await parseMarkdown(`${outputPath}old-content.md`);
-  fs.writeFileSync(`${outputPath}new-content.md`, newContent, 'utf8');
-  const newParsed = await parseMarkdown(`${outputPath}new-content.md`);
-  return { oldParsed, newParsed };
+async function getParsedVersion(content, version, outputPath) {
+  fs.writeFileSync(`${outputPath}${version}-content.md`, content, 'utf8');
+  const parsedContent = await parseMarkdown(`${outputPath}${version}-content.md`);
+  return parsedContent;
 }
 
-function findIssues(oldParsed, newParsed) {
-  const { description: oldDescription, instructions: oldInstructions, tests: oldTests } = oldParsed;
+async function findIssues(oldParsed, newParsed, nonEnglishLanguage, nonEnglishFilePath) {
+
   const { description: newDescription, instructions: newInstructions, tests: newTests } = newParsed;
   let issuesFound = '';
-  if (oldDescription !== newDescription) {
-    issuesFound += '- **`Description` section has changed**\n';
+  if (oldParsed) {
+    if (oldParsed.description !== newDescription) {
+      issuesFound += '- **`Description` section has changed**\n';
+    }
+    if (oldParsed.instructions !== newInstructions) {
+      issuesFound += '- **`Instructions` section has changed**\n';
+    }
   }
-  if (oldInstructions !== newInstructions) {
-    issuesFound += '- **`Instructions` section has changed**\n';
+  
+  let nonEnglishParsed;
+  if (fs.existsSync(nonEnglishFilePath)) {
+    nonEnglishParsed = await parseMarkdown(nonEnglishFilePath);
   }
-  if (oldTests.length === newTests.length) {
-    const nonMatchingTexts = oldTests.reduce((results, oldTest, idx) => {
+  /*
+  Check if current number of English tests for challenge match the current
+  number of non-English version tests.
+  */
+ 
+  if (nonEnglishParsed && nonEnglishParsed.tests.length !== newTests.length) {
+    issuesFound += `- **Number of tests do not match (English: ${newTests.length}, ${nonEnglishLanguage}: ${nonEnglishParsed.tests.length})**\n`;
+  } else if (oldParsed) {
+    const nonMatchingTexts = oldParsed.tests.reduce((results, oldTest, idx) => {
       if (oldTest.text !== newTests[idx].text) {
         results.push({
           testNum: idx + 1,
@@ -105,9 +108,8 @@ function findIssues(oldParsed, newParsed) {
 
 const utils = {
   getOutputFromCommand,
-  getFileContentVersions,
   createTextDiffTable,
-  getParsedVersions,
+  getParsedVersion,
   findIssues
 }
 
