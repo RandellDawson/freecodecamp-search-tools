@@ -4,21 +4,13 @@ const fs = require('fs');
 const { parseMarkdown } = require('@freecodecamp/challenge-md-parser');
 
 async function getOutputFromCommand(command) {
-  // necessary to allow to work on Windows
-  delete process.platform;
-  process.platform = 'linux';
-
   try {
-    const { stdout } = await exec(command, {
-      env: { PATH: '/C/Program Files/Git' },
-      shell: 'C:\\Program Files\\Git\\bin\\bash.exe'
-    });
+    const { stdout } = await exec(command);
     return stdout;
   }
   catch (err) {
     console.log(err);
   };
-  process.platform = 'win32'; // return to using Windows
 }
 
 async function getFileContentVersions(commit, filepath) {
