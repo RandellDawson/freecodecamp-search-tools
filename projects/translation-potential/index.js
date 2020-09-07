@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const matter = require('gray-matter');
 
@@ -9,11 +10,9 @@ const {
 } = require('./utils');
 
 // Only modify the following 3 variables
-const curriculumSection = 'curriculum/challenges/english/01-responsive-web-design';
-const fromDate = "DEC 1 2019";
-// Specify where to store output file(s)
-const baseFilePath = 'D:/Coding/fcc-misc/search-tools/data/';
-// Only modify the above 3 variables
+const curriculumSection = PROCESS.env.CURRICULUM_SECTION_PATH;
+const fromDate = process.env.FROM_DATE;
+const baseFilePath = process.env.BASE_FILE_PATH;
 
 const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDate}" -- ${curriculumSection} | tail -n 1`;
 
