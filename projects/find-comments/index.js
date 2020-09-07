@@ -1,6 +1,6 @@
 const walkDir = require('../../utils/walk-dir');
 const fs = require('fs');
-const { COMMENT_TRANSLATIONS } = require('./comments-lookup');
+const { COMMENT_TRANSLATIONS } = require('./comment-dictionary');
 
 let numChallenges = 0;
 let count = 0;
