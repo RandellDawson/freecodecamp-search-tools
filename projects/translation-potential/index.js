@@ -9,7 +9,7 @@ const {
   findIssues
 } = require('./utils');
 
-// Only modify the following 3 variables
+// Execute this script from the root folder of the fcc repo master branch
 const curriculumSection = PROCESS.env.CURRICULUM_SECTION_PATH;
 const fromDate = process.env.FROM_DATE;
 const baseFilePath = process.env.BASE_FILE_PATH;
