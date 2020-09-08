@@ -6,54 +6,48 @@ let numChallenges = 0;
 let count = 0;
 let results = [];
 
-const language = 'chinese';
-const commentType = 'js';
+require('dotenv').config();
+const language = process.env.LANGUAGE_TO_CHECK;
+const challengeSeedType = process.env.CHALLENGE_SEED_TYPE;
+const commentType = process.env.COMMENT_TYPE_TO_FIND;
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
 const commentTypeRegex = {
-  js: /\/\/ .+|\/\*[^]*\*\//g,
-  html: /<!--([\s\S]*?)-->/g,
-  css: /\/\*[\s\S]+?\*\//g
+  js: /\/\/(?<slComment>.+)|\/\*(?<comment>[^])*\*\//g,
+  html: /<!--(?<comment>[\s\S]*?)-->/g,
+  css: /\/\*(?<comment>[\s\S]+?)\*\//g
 };
 
-const directories = [
-  //'01-responsive-web-design',
-  '02-javascript-algorithms-and-data-structures'
-  //'03-front-end-libraries',
-  //'04-data-visualization',
-  //'08-coding-interview-prep'
-];
-
+const directories = [process.env.CURRICULUM_DIR_TO_FIND_COMMENTS];
 const commentsFound = {};
 
 directories.forEach(dir => {
-  walkDir('D:/Coding/fcc/curriculum/challenges/english/' + dir + '/', function (filePath) {
+  walkDir(process.env.FCC_ENGLISH_CHALLENGES_FILE_PATH + dir + '/', function (filePath) {
     numChallenges++;
     const code = fs.readFileSync(filePath, 'utf8');
-    const challengeSeedDivMatch = code.match(/<div id='js-seed'>(?<challengeSeedDiv>[\s\S]+?)<\/div>/);
-    if (challengeSeedDivMatch) {
+    const challengeSeedCodeRegex = new RegExp(
+      `<div id='${challengeSeedType}-seed'>\\s*\`\`\`${challengeSeedType}\\s*(?<challengeSeedCode>[\\s\\S]*?)\`\`\`\\s*<\\/div>`,
+      'm'
+    );
+    const challengeSeedCodeMatch = code.match(challengeSeedCodeRegex);
+    let challengeSeedCode;
+    if (challengeSeedCodeMatch) {
+      challengeSeedCode = challengeSeedCodeMatch.groups.challengeSeedCode;
+    }
+    const shortFilePath = filePath.replace(/^.*\/(curriculum\/challenges.+)/, '$1');
 
-      let { challengeSeedDiv } = challengeSeedDivMatch.groups;
-      challengeSeedDiv = challengeSeedDiv.trim();
-      const challengeSeedCodeMatch = challengeSeedDiv.match(/^```js(?<challengeSeedCode>[\s\S]*?)```$/m);
-      const { challengeSeedCode } = challengeSeedCodeMatch.groups;
-      const shortFilePath = filePath
-        .replace(/D:\\Coding\\fcc\\/, '')
-        .split('\\')
-        .join('/');
-
-      if (challengeSeedCode && !filePath.includes('-projects')) {
-        const commentsMatch = challengeSeedCode.match(commentTypeRegex[commentType]);
-
+    if (challengeSeedCode && !filePath.includes('-projects')) {
+      while (commentsMatch = commentTypeRegex[commentType].exec(challengeSeedCode)) {
         if (commentsMatch) {
-          for (comment of commentsMatch) {
-            if (!COMMENT_TRANSLATIONS[comment] || !COMMENT_TRANSLATIONS[comment][language]) {
-              if (!commentsFound[comment]) {
-                commentsFound[comment] = [shortFilePath];
-                count++;
-              } else {
-                commentsFound[comment].push(shortFilePath);
-              }
+          let theComment = commentsMatch.groups.comment || commentsMatch.groups.slComment;
+          theComment = theComment.trim();
+          if (!COMMENT_TRANSLATIONS[theComment] || !COMMENT_TRANSLATIONS[theComment][language]) {
+            if (!commentsFound[theComment]) {
+              commentsFound[theComment] = [shortFilePath];
+              count++;
+            } else {
+              console.log(theComment);
+              commentsFound[theComment].push(shortFilePath);
             }
           }
         }
@@ -80,6 +74,8 @@ ${files.reduce((files, file) => {
 }, '\n')}
 
 `, '');
+// console.log('results');
+// console.log(results);
 fs.writeFileSync(`./data/${commentType}-comments.txt`, results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
