@@ -14,6 +14,7 @@ const commentType = process.env.COMMENT_TYPE_TO_FIND;
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
 const commentTypeRegex = {
   js: /\/\/(?<slComment>.+)|\/\*(?<comment>[^])*\*\//g,
+  jsx: /\{\s*\/\*(?<comment>[\s\S]+?)\*\/\s*\}/g,
   html: /<!--(?<comment>[\s\S]*?)-->/g,
   css: /\/\*(?<comment>[\s\S]+?)\*\//g
 };
@@ -39,16 +40,15 @@ directories.forEach(dir => {
     if (challengeSeedCode && !filePath.includes('-projects')) {
       while (commentsMatch = commentTypeRegex[commentType].exec(challengeSeedCode)) {
         if (commentsMatch) {
-          let theComment = commentsMatch.groups.comment || commentsMatch.groups.slComment;
-          theComment = theComment.trim();
+          const theComment = (commentsMatch.groups.comment || commentsMatch.groups.slComment).trim();
           if (!COMMENT_TRANSLATIONS[theComment] || !COMMENT_TRANSLATIONS[theComment][language]) {
             if (!commentsFound[theComment]) {
               commentsFound[theComment] = [shortFilePath];
               count++;
             } else {
-              console.log(theComment);
               commentsFound[theComment].push(shortFilePath);
             }
+            console.log(theComment);
           }
         }
       }
