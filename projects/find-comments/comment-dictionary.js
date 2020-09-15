@@ -107,9 +107,6 @@ const COMMENT_TRANSLATIONS = {
   'Let\'s open a new tab for now': {
     chinese: true
   },
-  '<h1>Hello World</h1>\n\n<h2>CatPhotoApp</h2>\n\n<p>Kitty ipsum dolor sit amet, shed everywhere shed everywhere stretching attack your ankles chase the red dot, hairball run catnip eat the grass sniff.</p>': {
-    chinese: '<h1>Hello World</h1>\n\n<h2>CatPhotoApp</h2>\n\n<p>Kitty ipsum dolor sit amet, shed everywhere shed everywhere stretching attack your ankles chase the red dot, hairball run catnip eat the grass sniff.</p>'
-  },
   'Stacked bar chart of weekly training': {
     chinese: '每周训练的条形图'
   },
@@ -178,7 +175,161 @@ const COMMENT_TRANSLATIONS = {
   },
   'tabs is an array of titles of each site open within the window': {
     chinese: true
+  },
+  'React:': {
+    chinese: 'React:'
+  },
+  'React-Redux:': {
+    chinese: 'React-Redux:'
+  },
+  'Redux:': {
+    chinese: 'Redux:'
+  },
+  'Render an input, button, and ul below this line': {
+    chinese: true
+  },
+  'Define the Container component here:': {
+    chinese: true
+  },
+  'Complete the return statement:': {
+    chinese: true
+  },
+  'Define ADD, addMessage(), messageReducer(), and store here:': {
+    chinese: true
+  },
+  'Add handleChange() and submitMessage() methods here': {
+    chinese: true
+  },
+  'Render the Provider below this line': {
+    chinese: true
+  },
+  'Define the root reducer here': {
+    chinese: true
+  },
+  'Don\'t mutate state here or the tests will fail': {
+    chinese: true
+  },
+  'Redux methods are available from a Redux object': {
+    chinese: true
+  },
+  'For example: Redux.createStore()': {
+    chinese: true
+  },
+  'Define the store here:': {
+    chinese: true
+  },
+  'Define an action here:': {
+    chinese: true
+  },
+  'Define an action creator here:': {
+    chinese: true
+  },
+  'Dispatch the action here:': {
+    chinese: true
+  },
+  'A list of strings representing tasks to do:': {
+    chinese: true
+  },
+  'Global count variable:': {
+    chinese: true
+  },
+  'Dispatch request action here': {
+    chinese: true
+  },
+  'Dispatch received data action here': {
+    chinese: true
+  },
+  'Define a constant for increment action types': {
+    chinese: true
+  },
+  'Define a constant for decrement action types': {
+    chinese: true
+  },
+  'Define the counter reducer which will increment or decrement the state based on the action it receives': {
+    chinese:true
+  },
+  'Define an action creator for incrementing': {
+    chinese: true
+  },
+  'Define an action creator for decrementing': {
+    chinese: true
+  },
+  'Define the Redux store here, passing in your reducers': {
+    chinese: true
+  },
+  'Create the scale here': {
+    chinese: true
+  },
+  'Call scale with an argument here': {
+    chinese: true
+  },
+  'Padding between the SVG canvas boundary and the plot': {
+    chinese: true
+  },
+  'Create an x and y scale': {
+    chinese: true
+  },
+  'Returns 30': {
+    chinese: true
+  },
+  'test array:': {
+    chinese: true
+  },
+  'Example inventory lists': {
+    chinese: true
+  },
+  'Dictionary will hold the items of our set': {
+    chinese: true
+  },
+  'This method will check for the presence of an element and return true or false': {
+    chinese: true
+  },
+  'This method will return all the values in the set': {
+    chinese: true
+  },
+  'Find the target value and its parent': {
+    chinese: true
+  },
+  'Count the children of the target to delete': {
+    chinese: true
+  },
+  'Case 1: Target has no children': {
+    chinese: true
+  },
+  'Case 2: Target has one child': {
+    chinese: true
+  },
+  'Case 3: Target has two children': {
+    chinese: true
+  },
+  'Generate a randomly filled array': {
+    chinese: true
+  },
+  'This will hold the set': {
+    chinese: true
+  },
+  'This method will check for the presence of an element and return true or false': {
+    chinese: true
+  },
+  'This method will return all the values in the set': {
+    chinese: true
+  },
+  'This method will add an element to the set': {
+    chinese: true
+  },
+  'This method will remove an element from a set': {
+    chinese: true
+  },
+  'This method will return the size of the set': {
+    chinese: true
+  },
+  'This is our union method': {
+    chinese: true
+  },
+  'This is our intersection method': {
+    chinese: true
   }
+
 };
 
 exports.COMMENT_TRANSLATIONS = COMMENT_TRANSLATIONS;
