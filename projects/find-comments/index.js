@@ -1,6 +1,12 @@
 const walkDir = require('../../utils/walk-dir');
 const fs = require('fs');
-const { COMMENT_TRANSLATIONS } = require('./comment-dictionary');
+const {
+  COMMENTS_NEEDING_TRANSLATION,
+  COMMENTS_TO_NOT_TRANSLATE
+} = require('./../../data/comment-dictionary');
+
+const COMMENT_TRANSLATIONS = [ ...COMMENTS_NEEDING_TRANSLATION, ...COMMENTS_TO_NOT_TRANSLATE ]
+  .reduce((obj, comment) => ({ ...obj, [comment.text]: { chinese: true } }), {});
 
 let numChallenges = 0;
 let count = 0;
@@ -10,10 +16,12 @@ require('dotenv').config();
 const language = process.env.LANGUAGE_TO_CHECK;
 const challengeSeedType = process.env.CHALLENGE_SEED_TYPE;
 const commentType = process.env.COMMENT_TYPE_TO_FIND;
+
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|\/\/.*$/gm);
 // const jsCommentsMatch = challengeSeedCode.match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm);
+
 const commentTypeRegex = {
-  js: /\/\/(?<slComment>.+)|\/\*(?<comment>[^])*\*\//g,
+  js: /(?<!https?:)\/\/(?<slComment>.+)|\/\*(?<comment>[\s\S]*?)\*\//g,
   jsx: /\{\s*\/\*(?<comment>[\s\S]+?)\*\/\s*\}/g,
   html: /<!--(?<comment>[\s\S]*?)-->/g,
   css: /\/\*(?<comment>[\s\S]+?)\*\//g
@@ -30,7 +38,10 @@ directories.forEach(dir => {
       `<div id='${challengeSeedType}-seed'>\\s*\`\`\`${challengeSeedType}\\s*(?<challengeSeedCode>[\\s\\S]*?)\`\`\`\\s*<\\/div>`,
       'm'
     );
+    // const movingForward = 'moving-forward-from-here';
+
     const challengeSeedCodeMatch = code.match(challengeSeedCodeRegex);
+
     let challengeSeedCode;
     if (challengeSeedCodeMatch) {
       challengeSeedCode = challengeSeedCodeMatch.groups.challengeSeedCode;
@@ -39,8 +50,15 @@ directories.forEach(dir => {
 
     if (challengeSeedCode && !filePath.includes('-projects')) {
       while (commentsMatch = commentTypeRegex[commentType].exec(challengeSeedCode)) {
+        
         if (commentsMatch) {
-          const theComment = (commentsMatch.groups.comment || commentsMatch.groups.slComment).trim();
+          // if (filePath.includes(movingForward)) {
+          //   console.log('moving-forward-from-here challenge');
+          //   // console.log(challengeSeedCodeRegex.source);
+          //   // console.log(commentsMatch);
+          // }
+          const theComment = (commentsMatch.groups.slComment || commentsMatch.groups.comment).trim();
+
           if (!COMMENT_TRANSLATIONS[theComment] || !COMMENT_TRANSLATIONS[theComment][language]) {
             if (!commentsFound[theComment]) {
               commentsFound[theComment] = [shortFilePath];
@@ -74,8 +92,7 @@ ${files.reduce((files, file) => {
 }, '\n')}
 
 `, '');
-// console.log('results');
-// console.log(results);
+
 fs.writeFileSync(`./data/${commentType}-comments.txt`, results, 'utf8');
 console.log('unique comment count = ' + count);
 console.log('numChallenges = ' + numChallenges);
