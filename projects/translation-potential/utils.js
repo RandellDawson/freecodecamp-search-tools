@@ -1,25 +1,27 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
-const { parseMarkdown } = require('@freecodecamp/challenge-md-parser');
+const { parseMD: parseMarkdown } = require('../../freeCodeCamp/tools/challenge-md-parser/mdx');
 
 async function getOutputFromCommand(command) {
+  console.log(command);
   try {
     const { stdout } = await exec(command);
     return stdout;
   }
   catch (err) {
+    console.log('we have an error');
     console.log(err);
   };
 }
 
-async function getFileContentVersions(commit, filepath) {
+async function getFileContentVersions(pathToFccRepo, commit, filepath) {
   // Get file content for version one commit earlier than than earliest commit
-  let command = `git show ${commit}^1:${filepath}`;
+  let command = `git -C ${pathToFccRepo} show ${commit}^1:${filepath}`;
   const oldContent = await getOutputFromCommand(command);
 
   // Get file content for current version
-  command = `git show HEAD:${filepath}`;
+  command = `git -C ${pathToFccRepo} show HEAD:${filepath}`;
   const newContent = await getOutputFromCommand(command);
   return { oldContent, newContent };
 }

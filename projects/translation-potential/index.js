@@ -10,11 +10,12 @@ const {
 } = require('./utils');
 
 // Execute this script from the root folder of the fcc repo master branch
-const curriculumSection = PROCESS.env.CURRICULUM_SECTION_PATH;
+const curriculumSection = process.env.CURRICULUM_SECTION_PATH;
 const fromDate = process.env.FROM_DATE;
 const baseFilePath = process.env.BASE_FILE_PATH;
+const pathToFccRepo = process.env.PATH_TO_FCC_REPO;
 
-const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDate}" -- ${curriculumSection} | tail -n 1`;
+const FIND_EARLIEST_COMMIT_CMD = `git -C ${pathToFccRepo} log --pretty=format:"%H" --since "${fromDate}" -- ${curriculumSection} | tail -n 1`;
 
 (async function () {
   const commit = await getOutputFromCommand(FIND_EARLIEST_COMMIT_CMD);
@@ -22,7 +23,7 @@ const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDa
   Git command to find files between one commit earlier than the earliest
   commit and HEAD
   */
-  const command = `git diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
+  const command = `git -C ${pathToFccRepo} diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
   const listOfFilesBetweenDiffs = await getOutputFromCommand(command);
   const filenames = listOfFilesBetweenDiffs.split('\n');
 
@@ -32,7 +33,7 @@ const FIND_EARLIEST_COMMIT_CMD = `git log --pretty=format:"%H" --since "${fromDa
       const {
         oldContent,
         newContent
-      } = await getFileContentVersions(commit, filepath);
+      } = await getFileContentVersions(pathToFccRepo, commit, filepath);
       
       const {
         oldParsed,
