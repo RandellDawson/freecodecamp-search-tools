@@ -1,6 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const matter = require('gray-matter');
+const exclude = require('./exclude');
 
 const {
   getFileContentVersions,
@@ -23,34 +24,46 @@ const FIND_EARLIEST_COMMIT_CMD = `git -C ${pathToFccRepo} log --pretty=format:"%
   Git command to find files between one commit earlier than the earliest
   commit and HEAD
   */
-  const command = `git -C ${pathToFccRepo} diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
-  const listOfFilesBetweenDiffs = await getOutputFromCommand(command);
-  const filenames = listOfFilesBetweenDiffs.split('\n');
-
+  // const command = `git -C ${pathToFccRepo} diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
+  // const listOfFilesBetweenDiffs = await getOutputFromCommand(command);
+  // const filenames = listOfFilesBetweenDiffs.split('\n');
+  
+  let filenames = await getOutputFromCommand(`cd /home/rdawson/Coding/fcc && find ${curriculumSection} -type f`)
+  filenames = filenames.split('\n');
   let overallContentDiffs = []; // stores differences across all files
+
   for (let filepath of filenames) {
-    if (filepath) {
-      const {
-        oldContent,
-        newContent
-      } = await getFileContentVersions(pathToFccRepo, commit, filepath);
-      
-      const {
-        oldParsed,
-        newParsed
-      } = await getParsedVersions(oldContent, newContent, baseFilePath);
+    // console.log(filepath)
+    // console.log(filepath.replace('curriculum/challenges/english/', ''));
+    if (!filepath.match(/part-\d\d\d\.md$/) && !exclude.includes(filepath.replace('curriculum/challenges/english/', ''))) {
+      if (filepath) {
+        const {
+          oldContent,
+          newContent,
+          newMdxContent
+        } = await getFileContentVersions(pathToFccRepo, commit, filepath);
 
-      const issuesFound = findIssues(oldParsed, newParsed);
+        if (filepath.includes('standardize-times-with-the-html5-datetime-attribute.md')) {
+          const {
+            oldParsed,
+            newParsed,
+            newMdxParsed
+          } = await getParsedVersions(oldContent, newContent, newMdxContent, baseFilePath);
+          const issuesFound = findIssues(oldParsed, newParsed, newMdxParsed);
 
-      const baseGitHubUrl = 'https://github.com/freeCodeCamp/freeCodeCamp/blob/master/';
-      if (issuesFound) {
-        const { data: { title: challengeTitle } } = matter(newContent);
-        const challengeLink = `[${challengeTitle}](${baseGitHubUrl + filepath})`;
-        let content = `- [ ] ${challengeLink}\n\n<details><summary>Show/Hide sections with changes/issues</summary>\n\n${issuesFound}\n</details>\n\n`;
-        overallContentDiffs.push(content);
+          const baseGitHubUrl = 'https://github.com/freeCodeCamp/freeCodeCamp/blob/master/';
+          if (issuesFound) {
+            const { data: { title: challengeTitle } } = matter(newContent);
+            const challengeLink = `[${challengeTitle}](${baseGitHubUrl + filepath})`;
+            let content = `- [ ] ${challengeLink}\n\n<details><summary>Show/Hide sections with changes/issues</summary>\n\n${issuesFound}\n</details>\n\n`;
+            overallContentDiffs.push(content);
+          }
+          process.exit();
+        }
       }
     }
   }
+  console.log('# of summary details = ' + overallContentDiffs.length);
   fs.writeFileSync(
     `${baseFilePath}potential-changes.md`,
     overallContentDiffs.join('---\n'),

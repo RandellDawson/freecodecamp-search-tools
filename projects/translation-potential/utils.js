@@ -1,10 +1,11 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
-const { parseMD: parseMarkdown } = require('../../freeCodeCamp/tools/challenge-md-parser/mdx');
+const { parseMD: parseNewMarkdown } = require('../../freeCodeCamp/tools/challenge-md-parser/mdx');
+const getMd = require('./getMd');
+const { parseMarkdown } = require('@freecodecamp/challenge-md-parser');
 
 async function getOutputFromCommand(command) {
-  console.log(command);
   try {
     const { stdout } = await exec(command);
     return stdout;
@@ -17,13 +18,20 @@ async function getOutputFromCommand(command) {
 
 async function getFileContentVersions(pathToFccRepo, commit, filepath) {
   // Get file content for version one commit earlier than than earliest commit
-  let command = `git -C ${pathToFccRepo} show ${commit}^1:${filepath}`;
+  let command = `git -C ${pathToFccRepo} show ${commit}^1:${filepath.replace('.md','.english.md')}`;
+  // let command = `git -C ${pathToFccRepo} show ${commit}^1:${filepath}`;
   const oldContent = await getOutputFromCommand(command);
 
   // Get file content for current version
   command = `git -C ${pathToFccRepo} show HEAD:${filepath}`;
   const newContent = await getOutputFromCommand(command);
-  return { oldContent, newContent };
+
+  command = `cat freeCodeCamp/${filepath}`;
+  let newMdxContent = await getOutputFromCommand(command);
+  newMdxContent = await getMd(newMdxContent);
+  // console.log('newMdxContent');
+  // console.log(newMdxContent)
+  return { oldContent, newContent, newMdxContent };
 }
 
 function createTextDiffTable(oldText, newText) {
@@ -57,17 +65,26 @@ function createTextDiffTable(oldText, newText) {
 `;
 }
 
-async function getParsedVersions(oldContent, newContent, baseFilePath) {
+async function getParsedVersions(oldContent, newContent, newMdxContent, baseFilePath) {
   fs.writeFileSync(`${baseFilePath}old-content.md`, oldContent, 'utf8');
   const oldParsed = await parseMarkdown(`${baseFilePath}old-content.md`);
   fs.writeFileSync(`${baseFilePath}new-content.md`, newContent, 'utf8');
   const newParsed = await parseMarkdown(`${baseFilePath}new-content.md`);
-  return { oldParsed, newParsed };
+  fs.writeFileSync(`${baseFilePath}new-mdx-content.md`, newMdxContent, 'utf8');
+  console.log(newMdxContent);
+  console.log('\n\n');
+  const newMdxParsed = await parseNewMarkdown(`${baseFilePath}new-mdx-content.md`);
+  console.log(newMdxParsed);
+  console.log('\n\n\n')  
+  return { oldParsed, newParsed, newMdxParsed };
 }
 
-function findIssues(oldParsed, newParsed) {
+function findIssues(oldParsed, newParsed, newMdxParsed) {
   const { description: oldDescription, instructions: oldInstructions, tests: oldTests } = oldParsed;
   const { description: newDescription, instructions: newInstructions, tests: newTests } = newParsed;
+  const { tests: newMdxTests } = newMdxParsed;
+  // console.log(newMdxParsed);
+  // console.log('\n\n\n\n');
   let issuesFound = '';
   if (oldDescription !== newDescription) {
     issuesFound += '- **`Description` section has changed**\n';
@@ -81,7 +98,7 @@ function findIssues(oldParsed, newParsed) {
         results.push({
           testNum: idx + 1,
           oldText: oldTest.text,
-          newText: newTests[idx].text
+          newText: newMdxTests[idx].text
         });
       }
       return results;
