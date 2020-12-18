@@ -26,12 +26,18 @@ async function getFileContentVersions(pathToFccRepo, commit, filepath) {
   // files before ~ mid september had .english still
   let command1 = `git -C ${pathToFccRepo} show ${commit}^1:${filepath.replace('.md','.english.md')}`;
   let command2 = `git -C ${pathToFccRepo} show ${commit}^1:${filepath}`;
-
+  
   let oldContent;
   oldContent = await getOutputFromCommand(command1);
 
   if (oldContent === undefined) {
     oldContent = await getOutputFromCommand(command2);
+  }
+  if (oldContent === undefined) {
+    let command3 = `git -C ${pathToFccRepo} log --pretty=format:"%H" -- ${filepath.replace('.md','.english.md')} | tail -n 1`;
+    const earliestCommit = await getOutputFromCommand(command3);
+    const command4 = `git -C ${pathToFccRepo} show ${earliestCommit}:${filepath.replace('.md','.english.md')}`;
+    oldContent = await getOutputFromCommand(command4);
   }
   // Get file content for current version
   command = `git -C ${pathToFccRepo} show HEAD:${filepath}`;
