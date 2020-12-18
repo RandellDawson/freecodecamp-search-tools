@@ -20,45 +20,38 @@ const FIND_EARLIEST_COMMIT_CMD = `git -C ${pathToFccRepo} log --pretty=format:"%
 
 (async function () {
   const commit = await getOutputFromCommand(FIND_EARLIEST_COMMIT_CMD);
-  /*
-  Git command to find files between one commit earlier than the earliest
-  commit and HEAD
-  */
-  // const command = `git -C ${pathToFccRepo} diff --name-only ${commit}^1 HEAD -- ${curriculumSection}`;
-  // const listOfFilesBetweenDiffs = await getOutputFromCommand(command);
-  // const filenames = listOfFilesBetweenDiffs.split('\n');
-  
   let filenames = await getOutputFromCommand(`cd /home/rdawson/Coding/fcc && find ${curriculumSection} -type f`)
   filenames = filenames.split('\n');
   let overallContentDiffs = []; // stores differences across all files
-
+  console.log(commit);
   for (let filepath of filenames) {
-    // console.log(filepath)
-    // console.log(filepath.replace('curriculum/challenges/english/', ''));
-    if (!filepath.match(/part-\d\d\d\.md$/) && !exclude.includes(filepath.replace('curriculum/challenges/english/', ''))) {
+    const fileToCheck = filepath.replace('curriculum/challenges/english/', '');
+    if (!filepath.match(/part-\d\d\d\.md$/) && !exclude.includes(fileToCheck)) {
       if (filepath) {
         const {
           oldContent,
           newContent,
-          newMdxContent
+          newMdxContent,
+          newChineseMdxContent
         } = await getFileContentVersions(pathToFccRepo, commit, filepath);
 
-        if (filepath.includes('standardize-times-with-the-html5-datetime-attribute.md')) {
-          const {
-            oldParsed,
-            newParsed,
-            newMdxParsed
-          } = await getParsedVersions(oldContent, newContent, newMdxContent, baseFilePath);
-          const issuesFound = findIssues(oldParsed, newParsed, newMdxParsed);
+        const {
+          oldParsed,
+          newParsed,
+          newMdxParsed,
+          newChineseMdxParsed
+        } = await getParsedVersions(oldContent, newContent, newMdxContent, newChineseMdxContent, baseFilePath);
 
-          const baseGitHubUrl = 'https://github.com/freeCodeCamp/freeCodeCamp/blob/master/';
-          if (issuesFound) {
-            const { data: { title: challengeTitle } } = matter(newContent);
-            const challengeLink = `[${challengeTitle}](${baseGitHubUrl + filepath})`;
-            let content = `- [ ] ${challengeLink}\n\n<details><summary>Show/Hide sections with changes/issues</summary>\n\n${issuesFound}\n</details>\n\n`;
-            overallContentDiffs.push(content);
-          }
-          process.exit();
+        const issuesFound = await findIssues(oldParsed, newParsed, newMdxParsed, newChineseMdxParsed);
+
+        const baseEnglishRawUrl = 'https://raw.githubusercontent.com/freeCodeCamp/freeCodeCamp/master/';
+        const baseEditUrl = 'https://github.com/freeCodeCamp/freeCodeCamp/edit/master/';
+        if (issuesFound) {
+          const { data: { title: challengeTitle } } = matter(newContent);
+          const englishLink = `[View English](${baseEnglishRawUrl + filepath})`;
+          const chineseLink = `[Edit Chinese](${baseEditUrl}${filepath.replace('english', 'chinese')})`;
+          let content = `- [ ] **${challengeTitle}** ${chineseLink} | ${englishLink}\n\n<details><summary>Show/Hide sections with changes/issues</summary>\n\n${issuesFound}\n</details>\n\n`;
+          overallContentDiffs.push(content);
         }
       }
     }
