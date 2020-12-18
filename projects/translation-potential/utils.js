@@ -58,17 +58,17 @@ function createTextDiffTable(oldText, newText) {
   <td align>Old</td>
   <td align>
 
-  \`\`\`
+\`\`\`
   ${oldText}
-  \`\`\`
+\`\`\`
   </td>
   </tr>
   <td>New</td>
   <td>
 
-  \`\`\`
+\`\`\`
   ${newText}
-  \`\`\`
+\`\`\`
   </td>
   </tr>
   </table>
